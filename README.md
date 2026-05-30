@@ -1,6 +1,6 @@
-# 🍽️ Author : SANZOUANGO NOAH Israel Samuel
+# Author : SANZOUANGO NOAH Israel Samuel
 
-# 🍽️ Restaurant Booking Service
+## 🍽️ Restaurant Booking Service
 
 A production-grade **Node.js microservice** implementing a CRUD REST API for restaurant table bookings, with:
 
