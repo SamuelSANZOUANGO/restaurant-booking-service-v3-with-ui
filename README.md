@@ -33,7 +33,7 @@ A production-grade **Node.js microservice** implementing a CRUD REST API for res
 
 ```bash
 # 1. Clone
-git clone https://github.com/samuelsanzou/restaurant-booking-service
+git clone https://github.com/SamuelSANZOUANGO/restaurant-booking-service-v3-with-ui.git
 cd restaurant-booking-service
 
 # 2. Start everything
