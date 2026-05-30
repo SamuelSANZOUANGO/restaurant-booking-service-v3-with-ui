@@ -177,6 +177,7 @@ k6 run k6/smoke-test.js
 k6 run k6/load-test.js
 
 # Override base URL
+ifconfig : print your address IP local "eth0" 
 k6 run --env BASE_URL=http://staging.example.com k6/load-test.js
 ```
 
