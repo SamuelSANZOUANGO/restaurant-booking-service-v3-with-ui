@@ -27,21 +27,29 @@ spec:
         prometheus.io/port:   "3000"
     spec:
       serviceAccountName: booking-service
+
+      # SecurityContext au niveau du Pod - recommandé
       securityContext:
-        runAsNonRoot: false
-        runAsUser: 0
-        fsGroup: 0
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
+
       containers:
         - name: booking-service
-          image: nginx:alpine-slim          # ← image légère publique
-          imagePullPolicy: IfNotPresent
+          image: restaurant-booking:latest         # ← image légère publique
+          imagePullPolicy: Never
+          
           ports:
             - name: http
-              containerPort: 80
+              containerPort: 3000      # Corrigé (check correspond au Dockerfile
               protocol: TCP
+
+          # SecurityContext au niveau du container
           securityContext:
-            runAsUser: 0
+            # runAsUser: 0
             allowPrivilegeEscalation: false
+            # runAsUser: 1001        # Optionnel : déjà défini au pod level
+
           env:
             - name: PORT
               value: "3000"
@@ -57,10 +65,8 @@ spec:
           volumeMounts:
             - name: booking-data
               mountPath: /app/data
-            - name: nginx-cache            # ← fix Permission denied
-              mountPath: /var/cache/nginx
-            - name: nginx-run              # ← fix Permission denied
-              mountPath: /var/run
+             
+
           resources:
             requests:
               cpu:    "100m"
@@ -68,24 +74,23 @@ spec:
             limits:
               cpu:    "500m"
               memory: "256Mi"
+
           livenessProbe:
             httpGet:
-              path: /
-              port: http                   # ← /health n'existe pas sur nginx pur
+              path: /health
+              port: 3000                   # ← /health n'existe pas sur nginx pur
             initialDelaySeconds: 15
             periodSeconds: 20
             failureThreshold: 3
+
           readinessProbe:
             httpGet:
-              path: /
-              port: http
+              path: /health
+              port: 3000
             initialDelaySeconds: 5
             periodSeconds: 10
+
       volumes:
         - name: booking-data
           persistentVolumeClaim:
             claimName: booking-data-pvc
-        - name: nginx-cache                # ← emptyDir pour nginx
-          emptyDir: {}
-        - name: nginx-run
-          emptyDir: {}

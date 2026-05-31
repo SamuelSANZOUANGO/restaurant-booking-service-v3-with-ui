@@ -1,5 +1,5 @@
 # ── Build stage ───────────────────────────────────────────────────────────────
-FROM nginx:alpine-slim AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -13,14 +13,18 @@ COPY . .
 
 # ── Production image ──────────────────────────────────────────────────────────
 # node:20-alpine
-FROM nginx:alpine-slim 
+FROM node:20-alpine 
 
-LABEL maintainer="samuelsanzou"
+LABEL maintainer="Samuel SANZOUANGO"
 LABEL org.opencontainers.image.title="restaurant-booking-service"
 LABEL org.opencontainers.image.description="Restaurant table booking microservice"
 
 # Create non-root user
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+#RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+# Create non-root user (évite le conflit GID 1000)
+RUN addgroup -g 1001 appgroup && \
+    adduser -u 1001 -G appgroup -S appuser
+
 
 WORKDIR /app
 
@@ -30,8 +34,12 @@ COPY --from=builder /app/src         ./src
 COPY --from=builder /app/docs        ./docs
 COPY --from=builder /app/package.json .
 
+# Permissions strictes
 # Ensure data dir is writable by app user
-RUN mkdir -p /app/data && chown -R appuser:appgroup /app
+#RUN mkdir -p /app/data && chown -R appuser:appgroup /app
+RUN mkdir -p /app/data && \
+    chown -R appuser:appgroup /app && \
+    chmod -R 755 /app
 
 USER appuser
 
