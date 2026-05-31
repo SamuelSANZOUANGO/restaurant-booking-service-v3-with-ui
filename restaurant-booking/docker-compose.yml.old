@@ -1,12 +1,12 @@
 version: "3.9"
 
 services:
-  # ── Booking microservice backend (Node.js API) ───────────────────────────────────────────────────
-  backend:
+  # ── Booking microservice ───────────────────────────────────────────────────
+  booking-service:
     build:
       context: .
-      dockerfile: Dockerfile.backend
-    container_name: booking-service-backend
+      dockerfile: Dockerfile
+    container_name: booking-service
     restart: unless-stopped
     ports:
       - "3000:3000"
@@ -26,24 +26,6 @@ services:
       start_period: 10s
     networks:
       - monitoring
-    depend_on:
-      - db-init
-
-
-  # ── Booking microservice for frontend (Nginx + Interface Admin + client) ───────────────────────────────────────────────────
-  frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile.frontend
-    container_name: booking-service-frontend
-    restart: always
-    ports:
-      - "8081:80"
-    depend_on:
-      -  backend
-    networks:
-      - monitoring
-
 
   # ── Prometheus ────────────────────────────────────────────────────────────
   prometheus:

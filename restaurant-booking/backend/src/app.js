@@ -8,6 +8,8 @@ const db = require('./database');
 const metricsMiddleware = require('./middleware/metrics');
 const errorInjectionMiddleware = require('./middleware/errorInjection');
 const bookingRoutes = require('./routes/bookings');
+// add for orders
+const orderRoutes = require('./routes/orders/');
 
 const app = express();
 
@@ -54,6 +56,7 @@ app.locals.db = db;
 // ── Middleware ────────────────────────────────────────────────────────────────
 app.use(express.json());
 app.use(metricsMiddleware(httpRequestDuration, httpRequestTotal));
+app.use(express.static('frontend'));
 
 // Swagger docs
 try {
@@ -83,9 +86,12 @@ app.get('/metrics', async (req, res) => {
   res.end(await register.metrics());
 });
 
+app.get('/admin', (req, res) => res.sendFile(__dirname + '/../frontend/admin.html'));
+
 // Error injection applies only to booking API routes
 app.use('/api', errorInjectionMiddleware(config.errorInjectionRate));
 app.use('/api/bookings', bookingRoutes);
+app.user('/api/orders', orderRoutes);
 
 // 404 handler
 app.use((req, res) => {
