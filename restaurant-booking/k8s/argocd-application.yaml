@@ -9,7 +9,7 @@ spec:
   project: default
 
   source:
-    repoURL: https://github.com/samuelsanzou/restaurant-booking-service
+    repoURL: https://github.com/SamuelSANZOUANGO/restaurant-booking-service-v3-with-ui.git
     targetRevision: main
     path: k8s/               # ArgoCD watches this folder
 

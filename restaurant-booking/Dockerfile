@@ -1,5 +1,5 @@
 # ── Build stage ───────────────────────────────────────────────────────────────
-FROM node:20-alpine AS builder
+FROM nginx:alpine-slim AS builder
 
 WORKDIR /app
 
@@ -12,7 +12,8 @@ RUN npm install --omit=dev
 COPY . .
 
 # ── Production image ──────────────────────────────────────────────────────────
-FROM node:20-alpine
+# node:20-alpine
+FROM nginx:alpine-slim 
 
 LABEL maintainer="samuelsanzou"
 LABEL org.opencontainers.image.title="restaurant-booking-service"

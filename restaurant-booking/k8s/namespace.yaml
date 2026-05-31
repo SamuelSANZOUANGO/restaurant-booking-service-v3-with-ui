@@ -25,4 +25,4 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  storageClassName: standard  # adjust to your cluster's StorageClass
+  storageClassName: local-path  # adjust to your cluster's StorageClass

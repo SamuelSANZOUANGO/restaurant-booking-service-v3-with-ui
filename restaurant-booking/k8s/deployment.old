@@ -22,6 +22,7 @@ spec:
         app: booking-service
         version: "1.0.0"
       annotations:
+        # Tells Prometheus to scrape this pod directly (fallback if ServiceMonitor fails)
         prometheus.io/scrape: "true"
         prometheus.io/path:   "/metrics"
         prometheus.io/port:   "3000"
@@ -31,17 +32,14 @@ spec:
         runAsNonRoot: false
         runAsUser: 0
         fsGroup: 0
-      containers:
+      containers: [{
         - name: booking-service
-          image: nginx:alpine-slim          # ← image légère publique
+          image: nginx:alpine
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
               containerPort: 80
               protocol: TCP
-          securityContext:
-            runAsUser: 0
-            allowPrivilegeEscalation: false
           env:
             - name: PORT
               value: "3000"
@@ -57,10 +55,6 @@ spec:
           volumeMounts:
             - name: booking-data
               mountPath: /app/data
-            - name: nginx-cache            # ← fix Permission denied
-              mountPath: /var/cache/nginx
-            - name: nginx-run              # ← fix Permission denied
-              mountPath: /var/run
           resources:
             requests:
               cpu:    "100m"
@@ -70,14 +64,14 @@ spec:
               memory: "256Mi"
           livenessProbe:
             httpGet:
-              path: /
-              port: http                   # ← /health n'existe pas sur nginx pur
+              path: /health
+              port: http
             initialDelaySeconds: 15
             periodSeconds: 20
             failureThreshold: 3
           readinessProbe:
             httpGet:
-              path: /
+              path: /health
               port: http
             initialDelaySeconds: 5
             periodSeconds: 10
@@ -85,7 +79,3 @@ spec:
         - name: booking-data
           persistentVolumeClaim:
             claimName: booking-data-pvc
-        - name: nginx-cache                # ← emptyDir pour nginx
-          emptyDir: {}
-        - name: nginx-run
-          emptyDir: {}

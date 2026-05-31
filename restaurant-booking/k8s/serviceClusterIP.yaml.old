@@ -5,14 +5,14 @@ metadata:
   namespace: restaurant
   labels:
     app: booking-service
+    # This label is matched by ServiceMonitor
     release: prometheus
 spec:
-  type: NodePort   # ✅ changement ici
+  type: ClusterIP
   selector:
     app: booking-service
   ports:
     - name: http
       port: 80
-      targetPort: 3000
+      targetPort: http
       protocol: TCP
-      nodePort: 30007   # ✅ optionnel (sinon auto)
